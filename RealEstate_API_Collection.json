@@ -1,0 +1,76 @@
+{
+  "info": {
+    "_postman_id": "2786d20a-3f6b-4c99-a3fb-e3e5988f6a21",
+    "name": "Real Estate Management API",
+    "description": "End-to-end requests for the Real Estate & Construction Management API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "authToken", "value": "replace-with-test-jwt" },
+    { "key": "employeeId", "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e001" },
+    { "key": "supplierId", "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e002" },
+    { "key": "propertyId", "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e003" },
+    { "key": "materialId", "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e004" },
+    { "key": "expenseCategoryId", "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e005" },
+    { "key": "expenseId", "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e006" },
+    { "key": "apartmentId", "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e007" }
+  ],
+  "event": [{ "listen": "prerequest", "script": { "type": "text/javascript", "exec": [
+    "const token = pm.collectionVariables.get('authToken');",
+    "if (token) pm.request.headers.upsert({ key: 'Authorization', value: `Bearer ${token}` });"
+  ] } }],
+  "item": [
+    { "name": "1. Employees", "item": [
+      { "name": "List employees", "request": { "method": "GET", "url": "{{baseUrl}}/employees?page=1&limit=10&sort_by=name&search=" } },
+      { "name": "Get employee", "request": { "method": "GET", "url": "{{baseUrl}}/employees/{{employeeId}}" } },
+      { "name": "Create employee", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('employeeId', data.id || data.data?.id); }", "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }], "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"name\":\"Ahmed Hassan\",\"salary\":18000,\"experienceYears\":7,\"age\":32,\"phone\":\"+201001234567\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/employees" } },
+      { "name": "Update employee", "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"name\":\"Ahmed Hassan Updated\",\"salary\":19500,\"experienceYears\":8,\"age\":33,\"phone\":\"+201001234567\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/employees/{{employeeId}}" } },
+      { "name": "Delete employee", "request": { "method": "DELETE", "url": "{{baseUrl}}/employees/{{employeeId}}" } }
+    ] },
+    { "name": "2. Suppliers", "item": [
+      { "name": "List suppliers", "request": { "method": "GET", "url": "{{baseUrl}}/suppliers?page=1&limit=10&sort_by=name&search=&has_debt=true" } },
+      { "name": "Total supplier debt", "request": { "method": "GET", "url": "{{baseUrl}}/suppliers/total_debt" } },
+      { "name": "Supplier details", "request": { "method": "GET", "url": "{{baseUrl}}/suppliers/details" } },
+      { "name": "Get supplier", "request": { "method": "GET", "url": "{{baseUrl}}/suppliers/{{supplierId}}" } },
+      { "name": "Supplier debt", "request": { "method": "GET", "url": "{{baseUrl}}/suppliers/{{supplierId}}/total_debt" } },
+      { "name": "Create supplier", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('supplierId', data.id || data.data?.id); }", "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }], "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"name\":\"Cairo Building Materials\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/suppliers" } },
+      { "name": "Update supplier", "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"name\":\"Cairo Building Materials Co.\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/suppliers/{{supplierId}}" } },
+      { "name": "Delete supplier", "request": { "method": "DELETE", "url": "{{baseUrl}}/suppliers/{{supplierId}}" } }
+    ] },
+    { "name": "3. Properties", "item": [
+      { "name": "List properties", "request": { "method": "GET", "url": "{{baseUrl}}/properties?page=1&limit=10&status=under_construction&min_area=100&max_area=500&started_after=2025-01-01&ended_before=2026-12-31&sort_by=name&search=" } },
+      { "name": "Get property", "request": { "method": "GET", "url": "{{baseUrl}}/properties/{{propertyId}}" } },
+      { "name": "Property employees", "request": { "method": "GET", "url": "{{baseUrl}}/properties/{{propertyId}}/employees" } },
+      { "name": "Create property", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('propertyId', data.id || data.data?.id); }", "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }], "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"name\":\"Palm Heights\",\"status\":\"under_construction\",\"address\":\"New Cairo, Egypt\",\"startedIn\":\"2025-01-01\",\"endedIn\":\"2026-12-31\",\"floorsNumber\":12,\"area\":450.5}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/properties" } },
+      { "name": "Update property", "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"name\":\"Palm Heights - Phase 1\",\"status\":\"under_construction\",\"floorsNumber\":14,\"area\":500}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/properties/{{propertyId}}" } },
+      { "name": "Delete property", "request": { "method": "DELETE", "url": "{{baseUrl}}/properties/{{propertyId}}" } }
+    ] },
+    { "name": "4. Materials", "item": [
+      { "name": "List materials", "request": { "method": "GET", "url": "{{baseUrl}}/materials" } },
+      { "name": "Get material", "request": { "method": "GET", "url": "{{baseUrl}}/materials/{{materialId}}" } },
+      { "name": "Create material", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('materialId', data.id || data.data?.id); }", "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }], "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"name\":\"Portland Cement\",\"totalPrice\":50000,\"paidPrice\":20000,\"status\":\"as_dept\",\"quantity\":100,\"arriveDate\":\"2026-08-01\",\"paymentDate\":\"2026-09-01\",\"supplierId\":\"{{supplierId}}\",\"propertyId\":\"{{propertyId}}\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/materials" } },
+      { "name": "Update material", "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"paidPrice\":50000,\"status\":\"paid\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/materials/{{materialId}}" } },
+      { "name": "Delete material", "request": { "method": "DELETE", "url": "{{baseUrl}}/materials/{{materialId}}" } }
+    ] },
+    { "name": "5. Expenses & Expense Categories", "item": [
+      { "name": "List expense categories", "request": { "method": "GET", "url": "{{baseUrl}}/expense_categories" } },
+      { "name": "Get expense category", "request": { "method": "GET", "url": "{{baseUrl}}/expense_categories/{{expenseCategoryId}}" } },
+      { "name": "Create expense category", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('expenseCategoryId', data.id || data.data?.id); }", "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }], "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"name\":\"Site Transportation\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/expense_categories" } },
+      { "name": "Update expense category", "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"name\":\"Site Transport\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/expense_categories/{{expenseCategoryId}}" } },
+      { "name": "Delete expense category", "request": { "method": "DELETE", "url": "{{baseUrl}}/expense_categories/{{expenseCategoryId}}" } },
+      { "name": "List expenses", "request": { "method": "GET", "url": "{{baseUrl}}/expenses" } },
+      { "name": "Expenses ordered by date", "request": { "method": "GET", "url": "{{baseUrl}}/expenses/by-date?ordered_by_date=true" } },
+      { "name": "Expenses on date", "request": { "method": "GET", "url": "{{baseUrl}}/expenses/2026-08-15" } },
+      { "name": "Get expense", "request": { "method": "GET", "url": "{{baseUrl}}/expenses/{{expenseId}}" } },
+      { "name": "Create expense", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('expenseId', data.id || data.data?.id); }", "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }], "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"sender\":\"Site Manager\",\"amount\":2500,\"expenseCategoryId\":\"{{expenseCategoryId}}\",\"expenseDate\":\"2026-08-15\",\"paidTo\":\"Delta Transport\",\"paymentMethod\":\"BANK_TRANSFER\",\"receiptNumber\":\"BT-2026-0815\",\"receiptImageUrl\":\"https://example.com/receipts/BT-2026-0815.jpg\",\"approvedBy\":\"Finance Manager\",\"notes\":\"Transport of cement to Palm Heights\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/expenses" } }
+    ] },
+    { "name": "6. Apartments", "item": [
+      { "name": "List apartments", "request": { "method": "GET", "url": "{{baseUrl}}/apartments" } },
+      { "name": "Get apartment", "request": { "method": "GET", "url": "{{baseUrl}}/apartments/{{apartmentId}}" } },
+      { "name": "Create apartment", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('apartmentId', data.id || data.data?.id); }", "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }], "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"propertyId\":\"{{propertyId}}\",\"floor\":3,\"number\":\"3A\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/apartments" } },
+      { "name": "Update apartment", "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\"floor\":4,\"number\":\"4A\"}","options":{"raw":{"language":"json"}}}, "url": "{{baseUrl}}/apartments/{{apartmentId}}" } },
+      { "name": "Delete apartment", "request": { "method": "DELETE", "url": "{{baseUrl}}/apartments/{{apartmentId}}" } }
+    ] }
+  ]
+}

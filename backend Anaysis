@@ -1,0 +1,251 @@
+APIs : {
+    get:/employees
+        query_params:{
+            page,
+            limit,
+            sort_by="name",
+            search,
+        }
+    ,
+    get:/employees/:id,
+    post:/employees/,
+    put:/employees/:id,
+    delete:/employees/:id,
+    
+    get:/suppliers
+        query_params:{
+            page,
+            limit,
+            sort_by=name,
+            search,
+            has_debt=true,
+        }
+    ,
+    get:/suppliers/total_debt,
+    get:/suppliers/details, ( suppliers_details )
+    get:/suppliers/:id,
+    get:/suppliers/:id/total_debt,
+    post:/suppliers/,
+    put:/suppliers/:id,
+    delete:/suppliers/:id,
+
+    get:/properties
+        query_params:{
+            page,
+            limit,
+            status="completed"|"under_construction",
+            min_area,
+            max_area,
+            started_after,
+            ended_before,
+            sort_by="name"|"started_in"|"ended_in"|"floors_number"|"apartments_number"|"area",
+            search,
+        }
+    ,
+    get:/properties/:id,
+    get:/properties/:id/employees,
+    post:/properties/,
+    put:/properties/:id,
+    delete:/properties/:id,
+
+    get:/materials,
+    get:/materials/:id,
+    post:/materials/,
+    put:/materials/:id,
+    delete:/materials/:id,
+
+    get:/expenses,
+    get:/expenses/:id,
+    post:/expenses,
+
+    get:/expenses?ordered_by_date = true, ( DailyExpensesOrderedByDate )
+    get:/expenses/:date, ( DailyExpensesOrderedByDate where date = req.param("date") )
+
+    get:/expense_categories,
+    get:/expense_categories/:id,
+    post:/expense_categories/,
+    put:/expense_categories/:id,
+    delete:/expense_categories/:id,
+
+    get:/apartments,
+    get:/apartments/:id,
+    post:/apartments/,
+    put:/apartments/:id,
+    delete:/apartments/:id
+}
+
+ORM:Prisma
+
+project structure:"
+    prisma/
+        schema.prisma
+        seed.js
+    src/
+        controllers/
+        middleware/
+            authMiddleware.js
+            validate.js
+        routes/
+        app.js
+        db.js
+        index.js
+"
+
+app.js:"
+    use express
+    use rateLimit
+    use cors
+    use morgan
+"
+
+Employee{
+    ID: UUID v7 (PostgreSQL UUID)
+    name:
+    salary:
+    experience_years:
+    age :
+    phone:
+    updated_at:
+}
+
+Supplier{
+    ID: UUID v7 (PostgreSQL UUID)
+    name:
+    updated_at:
+}
+
+Property{
+    ID: UUID v7 (PostgreSQL UUID)
+    name:
+    status: { completed, under_construction }
+    address:
+    started_in:
+    ended_in:
+    floors_number:
+    apartments_number: apartment.count()
+    area:
+    updated_at:
+}
+
+PropertyEmployees {
+    property_ID:
+    employee_ID:
+    role:
+}
+
+Apartment{
+    ID: UUID v7 (PostgreSQL UUID)
+    property_ID:
+    floor:
+    number:
+}
+
+Materials{
+    ID: UUID v7 (PostgreSQL UUID)
+    name:
+    total_price:
+    paid_price:
+    status: {paid, as_dept}
+    quantity:
+    arrive_date:
+    remaining_amount: {
+        0 if status = paid,
+        total_price - paid_price if status = as_dept,
+    }
+    payment_date:default(arrive_date + 1mouth )
+    supplier_ID:
+    property_ID:
+    updated_at:
+}
+
+DailyExpenses{
+    ID: UUID v7 (PostgreSQL UUID)
+    sender:
+    amount:
+    expense_categories_ID:
+    expense_date:
+    paid_to:
+    payment_method: { CASH (default), credit_card, BANK_TRANSFER, CHECK, PETTY_CASH }
+    receipt_number:{
+        Null if payment_method NOT IN (BANK_TRANSFER, credit_card)
+    }
+    receipt_image_url:{
+        Null if receipt_number == Null
+    }
+    approved_by:
+    notes:
+    created_at:
+}
+
+AuditLogs{
+    ID: UUID v7 (PostgreSQL UUID)
+    table_name:
+    action_type: {'INSERT', 'UPDATE', 'DELETE'},
+    old_data: JSON NULL,
+    new_data: JSON NULL,
+    record_id:
+    created_at: default(CURRENT_TIMESTAMP)
+}
+
+ExpenseCategories:{
+    ID: UUID v7 (PostgreSQL UUID)
+    name:
+}
+
+Audit and `updated_at` triggers are defined for PostgreSQL in `src/db/migrations/002_audit_triggers.sql`.
+
+
+View DailyExpensesOrderedByDate {
+    DailyExpenses.OrderBy(date)
+}
+
+View SuppliersDetails {
+    supplier : his_materials : material_price : paid_price : remaining_amount
+}
+
+View v_suppliers_with_debt {
+    CREATE OR REPLACE VIEW v_suppliers_with_debt AS
+    SELECT 
+        s.id,
+        s.name,
+        s.updated_at,
+        COALESCE(SUM(m.remaining_amount), 0) AS total_debt
+    FROM suppliers s
+    LEFT JOIN materials m 
+        ON s.id = m.supplier_id 
+        AND m.status = 'as_dept'
+    GROUP BY s.id, s.name, s.updated_at;
+    CREATE VIEW
+}
+
+/*
+create SuppliersDetails View: // does not exit
+
+CREATE OR REPLACE VIEW v_supplier_materials AS
+SELECT 
+    s.id AS supplier_id,
+    s.name AS supplier_name,
+    s.updated_at AS supplier_updated_at,
+    m.id AS material_id,
+    m.name AS material_name,
+    m.total_price,
+    m.paid_price,
+    m.remaining_amount,
+    m.status,
+    m.quantity,
+    m.arrive_date,
+    m.payment_date,
+    m.property_id,
+    m.updated_at AS material_updated_at
+FROM supplier s
+LEFT JOIN materials m ON s.id = m.supplier_id;
+
+*/
+
+CREATE INDEX idx_materials_supplier_status 
+ON materials (supplier_ID, status);
+
+CREATE INDEX idx_materials_supplier_status_covering 
+ON materials (supplier_ID, status, remaining_amount);
+
+*/
