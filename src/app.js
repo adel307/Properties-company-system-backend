@@ -34,7 +34,6 @@ app.use(
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300, standardHeaders: 'draft-7', legacyHeaders: false }));
 
-app.get('/api/DB', ShowAllTables);
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use('/api', requireApiKey);
 
@@ -48,6 +47,7 @@ app.use('/api/apartments', apartmentRoutes);
 
 app.use((_req, res) => res.status(404).json({ error: 'Route not found' }));
 app.use((error, _req, res, _next) => {
+  if (error.status) return res.status(error.status).json({ error: error.message });
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') return res.status(409).json({ error: 'A record with this value already exists' });
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') return res.status(409).json({ error: 'Record is still referenced by another resource' });
   if (error instanceof Prisma.PrismaClientValidationError) return res.status(400).json({ error: error.message });

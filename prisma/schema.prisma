@@ -7,30 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum PropertyStatus {
-  completed
-  under_construction
-}
-
-enum MaterialStatus {
-  paid
-  as_dept
-}
-
-enum PaymentMethod {
-  CASH
-  credit_card
-  BANK_TRANSFER
-  CHECK
-  PETTY_CASH
-}
-
-enum AuditAction {
-  INSERT
-  UPDATE
-  DELETE
-}
-
 model Employee {
   id              String             @id @default(uuid()) @db.Uuid
   name            String
@@ -38,7 +14,6 @@ model Employee {
   experienceYears Int                @map("experience_years")
   age             Int
   phone           String?
-  createdAt       DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
   properties      PropertyEmployee[]
 
@@ -48,7 +23,6 @@ model Employee {
 model Supplier {
   id        String     @id @default(uuid()) @db.Uuid
   name      String
-  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
   materials Material[]
 
@@ -64,11 +38,10 @@ model Property {
   endedIn      DateTime?          @map("ended_in") @db.Date
   floorsNumber Int                @map("floors_number")
   area         Decimal            @db.Decimal(12, 2)
-  createdAt    DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
-  employees    PropertyEmployee[]
   apartments   Apartment[]
   materials    Material[]
+  employees    PropertyEmployee[]
 
   @@map("properties")
 }
@@ -77,8 +50,8 @@ model PropertyEmployee {
   propertyId String   @map("property_id") @db.Uuid
   employeeId String   @map("employee_id") @db.Uuid
   role       String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@id([propertyId, employeeId])
   @@map("property_employees")
@@ -107,12 +80,12 @@ model Material {
   paymentDate     DateTime?      @map("payment_date") @db.Date
   supplierId      String         @map("supplier_id") @db.Uuid
   propertyId      String         @map("property_id") @db.Uuid
-  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  supplier        Supplier       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-  property        Property       @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  property        Property       @relation(fields: [propertyId], references: [id])
+  supplier        Supplier       @relation(fields: [supplierId], references: [id])
 
   @@index([supplierId, status], map: "idx_materials_supplier_status")
+  @@index([supplierId, status, remainingAmount], map: "idx_materials_supplier_status_covering")
   @@map("materials")
 }
 
@@ -137,22 +110,45 @@ model DailyExpense {
   approvedBy        String?         @map("approved_by")
   notes             String?
   createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
-  category          ExpenseCategory @relation(fields: [expenseCategoryId], references: [id], onDelete: Restrict)
+  category          ExpenseCategory @relation(fields: [expenseCategoryId], references: [id])
 
   @@index([expenseDate])
   @@map("daily_expenses")
 }
 
 model AuditLog {
-  id        String      @id @default(uuid()) @db.Uuid
-  tableName String      @map("table_name")
+  id         String      @id @default(uuid()) @db.Uuid
+  tableName  String      @map("table_name")
   actionType AuditAction @map("action_type")
-  oldData   Json?       @map("old_data")
-  newData   Json?       @map("new_data")
-  recordId  String      @map("record_id") @db.Uuid
-  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  oldData    Json?       @map("old_data")
+  newData    Json?       @map("new_data")
+  recordId   String      @map("record_id") @db.Uuid
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([tableName, recordId])
   @@map("audit_logs")
+}
+
+enum PropertyStatus {
+  completed
+  under_construction
+}
+
+enum MaterialStatus {
+  paid
+  as_dept
+}
+
+enum PaymentMethod {
+  CASH
+  credit_card
+  BANK_TRANSFER
+  CHECK
+  PETTY_CASH
+}
+
+enum AuditAction {
+  INSERT
+  UPDATE
+  DELETE
 }

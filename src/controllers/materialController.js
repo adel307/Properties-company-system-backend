@@ -20,8 +20,6 @@ function normalizeMaterial(data) {
     paymentDate.setUTCMonth(paymentDate.getUTCMonth() + 1);
   }
 
-  console.log('normalizeMaterial:', { totalPrice, paidPrice, arriveDate, paymentDate, status });``
-
   return { ...data, totalPrice, paidPrice, arriveDate, remainingAmount: status === 'paid' ? 0 : Math.max(totalPrice - paidPrice, 0), paymentDate };
 }
 

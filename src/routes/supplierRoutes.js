@@ -23,7 +23,7 @@ router.get('/total_debt', controller.totalDebt);
 
 router.get('/details', controller.supplierDetails);
 
-router.route(`/:id${uuidPattern}`)
+router.route(`/:id(${uuidPattern})`)
   .get(validateId, controller.getSupplier)
   .put(
     validateId,

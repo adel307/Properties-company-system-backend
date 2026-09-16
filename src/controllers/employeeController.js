@@ -7,7 +7,16 @@ export const listEmployees = asyncHandler(async (req, res) => {
   const search = req.query.search?.trim();
   const orderBy = sortable.has(req.query.sort_by) ? { [req.query.sort_by]: 'asc' } : { name: 'asc' };
   const where = search ? { name: { contains: search, mode: 'insensitive' } } : {};
-  const [data, total] = await prisma.$transaction([prisma.employee.findMany({ where, orderBy, skip, take: limit }), prisma.employee.count({ where })]);
+  const [data, total] = await prisma.$transaction([
+    prisma.employee.findMany({
+      where,
+      orderBy,
+      skip,
+      take: limit,
+      include: { properties: { include: { property: true } } },
+    }),
+    prisma.employee.count({ where }),
+  ]);
   res.json({ data, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
 });
 export const getEmployee = byId(prisma.employee, { properties: { include: { property: true } } });
