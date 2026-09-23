@@ -1,15 +1,7 @@
-/**
- * src/ai/tools/handlers.js
- * ربط وتنفيذ الـ Tools الخاصة بالـ AI Agent مع الـ Backend APIs
- */
-
 import axios from 'axios';
 
 // إعداد كائن axios مع العنوان الأساسي للـ Backend والـ Headers المطلوبة
 const API_BASE_URL = process.env.BACKEND_URL || 'http://localhost:8000/api';
-const Frontend_BASE_URL = process.env.FRONTEND_URL || 'http://localhost:3000/';
-const Backend_BASE_URL = process.env.BACKEND_URL || 'http://localhost:8000/api';
-
 const API_KEY = process.env.API_KEY;
 
 const apiClient = axios.create({
@@ -19,6 +11,92 @@ const apiClient = axios.create({
     ...(API_KEY && { 'x-api-key': API_KEY }),
   },
 });
+
+// ==========================================
+// أدوات معالجة النصوص والـ Fuzzy Matching
+// ==========================================
+
+/**
+ * تنظيف وتوحيد النصوص العربية والإنجليزية لإلغاء فروق الهمزات والمسافات
+ */
+const normalizeText = (text) => {
+  if (!text) return '';
+  return text
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[\u064B-\u0652]/g, '') // إزالة التشكيل
+    .replace(/\s+/g, ' ');
+};
+
+/**
+ * دالة حساب مدى التشابه (Levenshtein Distance) للمطابقة المرنة جدًا
+ */
+const getLevenshteinDistance = (a, b) => {
+  const matrix = Array.from({ length: a.length + 1 }, () =>
+    Array(b.length + 1).fill(0)
+  );
+
+  for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+  for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return matrix[a.length][b.length];
+};
+
+/**
+ * تطبيق البحث المرن على مصفوفة عناصر بناءً على خاصية معينة (مثل name)
+ */
+const fuzzyFilter = (items, query, key = 'name') => {
+  if (!Array.isArray(items) || !query) return items;
+
+  const cleanQuery = normalizeText(query);
+
+  return items.filter((item) => {
+    const itemValue = normalizeText(item[key]);
+    if (!itemValue) return false;
+
+    // 1. التطابق الجزئي (Sub-string match)
+    if (itemValue.includes(cleanQuery) || cleanQuery.includes(itemValue)) {
+      return true;
+    }
+
+    // 2. تطابق الكلمات الفردية
+    const queryWords = cleanQuery.split(' ');
+    const itemWords = itemValue.split(' ');
+    const hasWordMatch = queryWords.some((qWord) =>
+      itemWords.some((iWord) => iWord.includes(qWord) || qWord.includes(iWord))
+    );
+    if (hasWordMatch) return true;
+
+    // 3. مطابقة المسافة الفاصلة (Levenshtein Distance) للأخطاء الإملائية الشديدة
+    const distance = getLevenshteinDistance(itemValue, cleanQuery);
+    const maxAllowedDistance = Math.floor(cleanQuery.length * 0.4); // أخطاء تصل لـ 40% من طول الكلمة
+    return distance <= maxAllowedDistance;
+  });
+};
+
+/**
+ * استخراج مصفوفة البيانات بغض النظر عن طريقة إرجاع الـ Backend لها
+ */
+const extractDataArray = (responseData) => {
+  if (Array.isArray(responseData)) return responseData;
+  if (Array.isArray(responseData?.data)) return responseData.data;
+  if (Array.isArray(responseData?.result?.data)) return responseData.result.data;
+  return [];
+};
 
 export const agentToolHandlers = {
   // ==========================================
@@ -38,7 +116,22 @@ export const agentToolHandlers = {
   // ==========================================
   get_properties: async (params) => {
     const response = await apiClient.get('/properties', { params });
-    return response.data;
+    const result = response.data;
+    const items = extractDataArray(result);
+    const searchQuery = params?.search || params?.name;
+
+    // إذا كان هناك استعلام بحث ولم يُرجع الـ Backend نتائج، نفذ الـ Fuzzy Match
+    if (items.length === 0 && searchQuery) {
+      const allResponse = await apiClient.get('/properties');
+      const allItems = extractDataArray(allResponse.data);
+      const matched = fuzzyFilter(allItems, searchQuery, 'name');
+
+      if (matched.length > 0) {
+        return { data: matched, pagination: { total: matched.length, page: 1, limit: matched.length, pages: 1 } };
+      }
+    }
+
+    return result;
   },
 
   get_property: async ({ id }) => {
@@ -71,7 +164,21 @@ export const agentToolHandlers = {
   // ==========================================
   get_employees: async (params) => {
     const response = await apiClient.get('/employees', { params });
-    return response.data;
+    const result = response.data;
+    const items = extractDataArray(result);
+    const searchQuery = params?.search || params?.name;
+
+    if (items.length === 0 && searchQuery) {
+      const allResponse = await apiClient.get('/employees');
+      const allItems = extractDataArray(allResponse.data);
+      const matched = fuzzyFilter(allItems, searchQuery, 'name');
+
+      if (matched.length > 0) {
+        return { data: matched, pagination: { total: matched.length, page: 1, limit: matched.length, pages: 1 } };
+      }
+    }
+
+    return result;
   },
 
   get_employee: async ({ id }) => {
@@ -99,7 +206,21 @@ export const agentToolHandlers = {
   // ==========================================
   get_suppliers: async (params) => {
     const response = await apiClient.get('/suppliers', { params });
-    return response.data;
+    const result = response.data;
+    const items = extractDataArray(result);
+    const searchQuery = params?.search || params?.name;
+
+    if (items.length === 0 && searchQuery) {
+      const allResponse = await apiClient.get('/suppliers');
+      const allItems = extractDataArray(allResponse.data);
+      const matched = fuzzyFilter(allItems, searchQuery, 'name');
+
+      if (matched.length > 0) {
+        return { data: matched, pagination: { total: matched.length, page: 1, limit: matched.length, pages: 1 } };
+      }
+    }
+
+    return result;
   },
 
   get_suppliers_total_debt: async () => {
@@ -112,7 +233,7 @@ export const agentToolHandlers = {
     return response.data;
   },
 
-  get_supplier_by_id: async ({ id }) => {
+  get_supplier: async ({ id }) => {
     const response = await apiClient.get(`/suppliers/${id}`);
     return response.data;
   },
@@ -142,7 +263,21 @@ export const agentToolHandlers = {
   // ==========================================
   get_materials: async (params) => {
     const response = await apiClient.get('/materials', { params });
-    return response.data;
+    const result = response.data;
+    const items = extractDataArray(result);
+    const searchQuery = params?.search || params?.name;
+
+    if (items.length === 0 && searchQuery) {
+      const allResponse = await apiClient.get('/materials');
+      const allItems = extractDataArray(allResponse.data);
+      const matched = fuzzyFilter(allItems, searchQuery, 'name');
+
+      if (matched.length > 0) {
+        return { data: matched, pagination: { total: matched.length, page: 1, limit: matched.length, pages: 1 } };
+      }
+    }
+
+    return result;
   },
 
   get_material: async ({ id }) => {
@@ -219,7 +354,21 @@ export const agentToolHandlers = {
   // ==========================================
   get_apartments: async (params) => {
     const response = await apiClient.get('/apartments', { params });
-    return response.data;
+    const result = response.data;
+    const items = extractDataArray(result);
+    const searchQuery = params?.search || params?.name || params?.unit_number;
+
+    if (items.length === 0 && searchQuery) {
+      const allResponse = await apiClient.get('/apartments');
+      const allItems = extractDataArray(allResponse.data);
+      const matched = fuzzyFilter(allItems, searchQuery, 'name');
+
+      if (matched.length > 0) {
+        return { data: matched, pagination: { total: matched.length, page: 1, limit: matched.length, pages: 1 } };
+      }
+    }
+
+    return result;
   },
 
   get_apartment: async ({ id }) => {
@@ -250,7 +399,7 @@ export async function executeAgentTool(toolName, args) {
   const handler = agentToolHandlers[toolName];
 
   if (!handler) {
-    throw new Error(`الأداة المحددة "${toolName}" غير مدعومة في Handlers.`);
+    return { success: false, error: `الأداة "${toolName}" غير مدعومة.` };
   }
 
   try {

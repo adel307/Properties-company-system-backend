@@ -1,8 +1,3 @@
-/**
- * src/routes/aiRoutes.js
- * مسارات API المخصصة لخدمات الذكاء الاصطناعي والمساعد الصوتي
- */
-
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
@@ -11,13 +6,14 @@ import { processVoiceOrTextCommand, analyzeStoredAudio } from '../controllers/ai
 
 const router = express.Router();
 
-// 1. إعداد مجلد التخزين المؤقت للملفات الصوتية المرفوعة
 const uploadDir = path.join(process.cwd(), 'uploads', 'audio');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// 2. إعداد مكتبة Multer للتعامل مع رفع الملفات الصوتية
+// ==========================================
+// 1. إعداد Multer
+// ==========================================
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
@@ -25,32 +21,77 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname) || '.wav';
-    cb(null, `audio-${uniqueSuffix}${ext}`);
+    const prefix = file.fieldname === 'audio' ? 'audio' : 'json';
+    cb(null, `${prefix}-${uniqueSuffix}${ext}`);
   },
 });
 
 const upload = multer({
   storage,
-  limits: {
-    fileSize: 25 * 1024 * 1024, // الحد الأقصى لحجم الملف: 25 ميجابايت
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB
+  fileFilter: (req, file, cb) => {
+    // حقل audio → صوت فقط
+    if (file.fieldname === 'audio') {
+      const allowed = [
+        'audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/webm',
+        'audio/ogg', 'audio/m4a', 'audio/x-m4a', 'audio/mp4',
+      ];
+      if (allowed.includes(file.mimetype) || file.mimetype.startsWith('audio/')) {
+        return cb(null, true);
+      }
+      return cb(new Error('صيغة الملف الصوتي غير مدعومة.'));
+    }
+
+    // حقل file → JSON فقط
+    if (file.fieldname === 'file') {
+      const allowed = ['application/json', 'text/json', 'text/plain'];
+      if (allowed.includes(file.mimetype)) {
+        return cb(null, true);
+      }
+      return cb(new Error('صيغة ملف JSON غير مدعومة.'));
+    }
+
+    cb(null, true);
   },
 });
 
 // ==========================================
-// تعريف المسارات (Routes)
+// 2. Middleware لاستقبال audio + file (اختياريين)
 // ==========================================
+function optionalMultipartUpload(req, res, next) {
+  const contentType = req.headers['content-type'] || '';
 
-/**
- * @route   POST /api/ai/process (أو /api/voice-assistant/process)
- * @desc    استقبال الطلب (صوتي عبر Multer أو نصي عبر Body) ومعالجته عبر الـ AI Agent
- * @access  Protected / Public (حسب إعدادات authMiddleware في app.js)
- */
-router.post('/process', upload.single('audio'), processVoiceOrTextCommand);
+  // نصي بحت (JSON) → لا Multer
+  if (contentType.includes('application/json')) {
+    return next();
+  }
 
-/**
- * @route   POST /api/ai/analyze-stored-audio
- * @desc    تحليل ملف صوتي مخزن سابقاً على الخادم
- */
+  // multipart → Multer مع حقلين: audio و file
+  const handler = upload.fields([
+    { name: 'audio', maxCount: 1 },
+    { name: 'file', maxCount: 1 },
+  ]);
+
+  handler(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({
+          success: false,
+          message: 'حجم الملف يتجاوز الحد المسموح به (25 ميجابايت).',
+        });
+      }
+      // خطأ fileFilter أو غيره → نمرره للـ controller عبر req.fileError
+      req.fileError = err.message;
+    }
+    next();
+  });
+}
+
+// ==========================================
+// 3. تعريف المسارات
+// ==========================================
+router.post('/process', optionalMultipartUpload, processVoiceOrTextCommand);
+
 router.post('/analyze-stored-audio', analyzeStoredAudio);
 
 export default router;

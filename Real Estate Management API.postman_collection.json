@@ -1,0 +1,1238 @@
+{
+  "info": {
+    "_postman_id": "c42195b0-6360-41c0-8e74-c474a37c942a",
+    "name": "Real Estate Management API",
+    "description": "End-to-end requests for the Real Estate & Construction Management API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51903486",
+    "_collection_link": "https://go.postman.co/collection/51903486-c42195b0-6360-41c0-8e74-c474a37c942a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. Employees",
+      "item": [
+        {
+          "name": "List employees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "name",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get employee",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/{{employeeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "{{employeeId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('employeeId', data.id || data.data?.id); }\npm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\":\"Ahmed Hassan\",\n    \"salary\":18000,\n    \"experienceYears\":7,\n    \"age\":32,\n    \"phone\":\"+201001234567\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Ahmed Hassan Updated\",\"salary\":19500,\"experienceYears\":8,\"age\":33,\"phone\":\"+201001234567\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees/{{employeeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "{{employeeId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete employee",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/{{employeeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "{{employeeId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Suppliers",
+      "item": [
+        {
+          "name": "List suppliers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/suppliers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "suppliers"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "name",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "has_debt",
+                  "value": "true",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get supplier",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/suppliers/{{supplierId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "suppliers",
+                "{{supplierId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create supplier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('supplierId', data.id || data.data?.id); }\npm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"suppliers1\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/suppliers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "suppliers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update supplier",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"suppliers2\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/suppliers/{{supplierId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "suppliers",
+                "{{supplierId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete supplier",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/suppliers/{{supplierId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "suppliers",
+                "{{supplierId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Supplier debt",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/suppliers/{{supplierId}}/total_debt",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "suppliers",
+                "{{supplierId}}",
+                "total_debt"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Total supplier debt",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/suppliers/total_debt",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "suppliers",
+                "total_debt"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Supplier details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/suppliers/details",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "suppliers",
+                "details"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Properties",
+      "item": [
+        {
+          "name": "List properties",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/properties",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "properties"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "under_construction",
+                  "disabled": true
+                },
+                {
+                  "key": "min_area",
+                  "value": "100",
+                  "disabled": true
+                },
+                {
+                  "key": "max_area",
+                  "value": "500",
+                  "disabled": true
+                },
+                {
+                  "key": "started_after",
+                  "value": "2025-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "ended_before",
+                  "value": "2026-12-31",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "name",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get property",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{propertyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "properties",
+                "{{propertyId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create property",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('propertyId', data.id || data.data?.id); }\npm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\":\"Palm Heights\",\n    \"status\":\"under_construction\",\n    \"address\":\"New Cairo, Egypt\",\n    \"startedIn\":\"2025-01-01\",\n    \"endedIn\":\"2026-12-31\",\n    \"floorsNumber\":12,\n    \"area\":450.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/properties",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "properties"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update property",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Palm Heights\",\n    \"status\": \"under_construction\",\n    \"address\": \"New Cairo, Egypt\",\n    \"startedIn\": \"2025-01-01T00:00:00.000Z\",\n    \"endedIn\": \"2026-12-31T00:00:00.000Z\",\n    \"floorsNumber\": 12,\n    \"area\": \"450.5\",\n    \"apartments\": [\n        {\n            \"id\": \"7c06328d-1513-429c-99c9-ab1b8f32ed94\"\n        },\n        {\n            \"id\": \"17268634-1aa2-4065-9e78-fbb8aa04e214\"\n        }\n    ],\n    \"employees\": [\n        {\n            \"id\": \"e293f563-4f1c-4143-a72d-09db03176be4\"\n        }\n    ]\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{propertyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "properties",
+                "{{propertyId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Property employees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{propertyId}}/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "properties",
+                "{{propertyId}}",
+                "employees"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete property",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{propertyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "properties",
+                "{{propertyId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Materials",
+      "item": [
+        {
+          "name": "List materials",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/materials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "materials"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get material",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/materials/{{materialId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "materials",
+                "{{materialId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create material",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('materialId', data.id || data.data?.id); }\npm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\":\"Portland Cement\",\n    \"totalPrice\":50000,\n    \"paidPrice\":20000,\n    \"status\":\"as_dept\",\n    \"quantity\":100,\n    \"arriveDate\":\"2026-08-01\",\n    \"paymentDate\":\"2026-09-01\",\n    \"supplierId\":\"{{supplierId}}\",\n    \"propertyId\":\"{{propertyId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/materials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "materials"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update material",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"paidPrice\":50000,\"status\":\"paid\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/materials/{{materialId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "materials",
+                "{{materialId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete material",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/materials/{{materialId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "materials",
+                "{{materialId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Expenses & Expense Categories",
+      "item": [
+        {
+          "name": "List expenses",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/expenses?Ordered_by_bate=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expenses"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-09-01",
+                  "disabled": true
+                },
+                {
+                  "key": "Ordered_by_bate",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get expense",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/expenses/{{expenseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expenses",
+                "{{expenseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create expense",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('expenseId', data.id || data.data?.id); }\npm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sender\":\"Site Manager\",\n    \"amount\":2500,\n    \"expenseCategoryId\":\"{{expenseCategoryId}}\",\n    \"expenseDate\":\"2026-08-15\",\n    \"paidTo\":\"Delta Transport\",\n    \"paymentMethod\":\"BANK_TRANSFER\",\n    \"receiptNumber\":\"BT-2026-0816\",\n    \"receiptImageUrl\":\"https://example.com/receipts/BT-2026-0815.jpg\",\n    \"approvedBy\":\"Finance Manager\",\n    \"notes\":\"Transport of cement to Palm Heights\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/expenses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List expense categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/expense_categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expense_categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get expense category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/expense_categories/{{expenseCategoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expense_categories",
+                "{{expenseCategoryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create expense category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('expenseCategoryId', data.id || data.data?.id); }",
+                  "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Site Transportation\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/expense_categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expense_categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update expense category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Site Transport\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/expense_categories/{{expenseCategoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expense_categories",
+                "{{expenseCategoryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete expense category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/expense_categories/{{expenseCategoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expense_categories",
+                "{{expenseCategoryId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Apartments",
+      "item": [
+        {
+          "name": "List apartments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/apartments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "apartments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get apartment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/apartments/{{apartmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "apartments",
+                "{{apartmentId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create apartment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('apartmentId', data.id || data.data?.id); }\npm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"propertyId\":\"{{propertyId}}\",\n    \"floor\":3,\n    \"number\":\"3A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apartments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "apartments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update apartment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"floor\":4,\"number\":\"4A\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apartments/{{apartmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "apartments",
+                "{{apartmentId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete apartment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/apartments/{{apartmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "apartments",
+                "{{apartmentId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "voice-assistant",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "audio",
+              "type": "file",
+              "src": [
+                "/home/adel101/MyWork/Projects/REC_company_dashboard/TEST4.mp4"
+              ]
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/voice-assistant/process",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "voice-assistant",
+            "process"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AI",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "prompt",
+              "value": "\"اسم العامل هو محمد أحمد ، مرتبه 3000 جنيه، عمره 24 سنة، خبرة 4 سنين\"",
+              "type": "text"
+            },
+            {
+              "key": "audio",
+              "type": "file",
+              "src": [
+                "/home/adel101/MyWork/Projects/REC_company_dashboard/TEST2.mp4"
+              ]
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "src": [
+                "/home/adel101/MyWork/Projects/REC_company_dashboard/Backend/uploads/transcription_1790147974544.json"
+              ]
+            },
+            {
+              "key": "history",
+              "value": "[]",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ai/process",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ai",
+            "process"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const token = pm.collectionVariables.get('authToken');",
+          "if (token) pm.request.headers.upsert({ key: 'Authorization', value: `Bearer ${token}` });"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "authToken",
+      "value": "replace-with-test-jwt"
+    },
+    {
+      "key": "employeeId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e001"
+    },
+    {
+      "key": "supplierId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e002"
+    },
+    {
+      "key": "propertyId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e003"
+    },
+    {
+      "key": "materialId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e004"
+    },
+    {
+      "key": "expenseCategoryId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e005"
+    },
+    {
+      "key": "expenseId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e006"
+    },
+    {
+      "key": "apartmentId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e007"
+    }
+  ]
+}

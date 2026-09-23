@@ -1,9 +1,3 @@
-/**
- * src/ai/tools/definitions.js
- * تعريف الأدوات (Tools/Functions) المتاحة للـ AI Agent
- * متوافق مع كافة مسارات Backend API وواجهة النظام
- */
-
 export const agentTools = [
   // ==========================================
   // 1. أداة التوجيه والتنقل بالواجهة (Frontend Navigation)
@@ -75,10 +69,10 @@ export const agentTools = [
         name: { type: 'STRING', description: 'اسم العقار' },
         address: { type: 'STRING', description: 'عنوان العقار' },
         status: { type: 'STRING', description: 'completed أو under_construction' },
-        floors_number: { type: 'NUMBER', description: 'عدد الأدوار' },
+        floorsNumber: { type: 'NUMBER', description: 'عدد الأدوار' },
         area: { type: 'NUMBER', description: 'المساحة بالمتر المربع' },
-        started_in: { type: 'STRING', description: 'تاريخ البداية (YYYY-MM-DD)' },
-        ended_in: { type: 'STRING', description: 'تاريخ الانتهاء (YYYY-MM-DD)' },
+        startedIn: { type: 'STRING', description: 'تاريخ البداية (YYYY-MM-DD)' },
+        endedIn: { type: 'STRING', description: 'تاريخ الانتهاء (YYYY-MM-DD)' },
       },
       required: ['name'],
     },
@@ -93,10 +87,10 @@ export const agentTools = [
         name: { type: 'STRING', description: 'اسم العقار' },
         address: { type: 'STRING', description: 'عنوان العقار' },
         status: { type: 'STRING', description: 'completed أو under_construction' },
-        floors_number: { type: 'NUMBER', description: 'عدد الأدوار' },
+        floorsNumber: { type: 'NUMBER', description: 'عدد الأدوار' },
         area: { type: 'NUMBER', description: 'المساحة بالمتر المربع' },
-        started_in: { type: 'STRING', description: 'تاريخ البداية (YYYY-MM-DD)' },
-        ended_in: { type: 'STRING', description: 'تاريخ الانتهاء (YYYY-MM-DD)' },
+        startedIn: { type: 'STRING', description: 'تاريخ البداية (YYYY-MM-DD)' },
+        endedIn: { type: 'STRING', description: 'تاريخ الانتهاء (YYYY-MM-DD)' },
       },
       required: ['id'],
     },
@@ -148,7 +142,7 @@ export const agentTools = [
       properties: {
         name: { type: 'STRING', description: 'اسم الموظف' },
         salary: { type: 'NUMBER', description: 'الراتب' },
-        experience_years: { type: 'NUMBER', description: 'سنوات الخبرة' },
+        experienceYears: { type: 'NUMBER', description: 'سنوات الخبرة' },
         age: { type: 'NUMBER', description: 'العمر' },
         phone: { type: 'STRING', description: 'رقم الهاتف' },
       },
@@ -164,7 +158,7 @@ export const agentTools = [
         id: { type: 'STRING', description: 'معرف الموظف (UUID)' },
         name: { type: 'STRING', description: 'اسم الموظف' },
         salary: { type: 'NUMBER', description: 'الراتب' },
-        experience_years: { type: 'NUMBER', description: 'سنوات الخبرة' },
+        experienceYears: { type: 'NUMBER', description: 'سنوات الخبرة' },
         age: { type: 'NUMBER', description: 'العمر' },
         phone: { type: 'STRING', description: 'رقم الهاتف' },
       },
@@ -217,7 +211,7 @@ export const agentTools = [
     },
   },
   {
-    name: 'get_supplier_by_id',
+    name: 'get_supplier',
     description: 'جلب بيانات مورد معين بمعرفه الخاص.',
     parameters: {
       type: 'OBJECT',
@@ -305,16 +299,16 @@ export const agentTools = [
       type: 'OBJECT',
       properties: {
         name: { type: 'STRING', description: 'اسم المادة (مثل: إسمنت، حديد)' },
-        total_price: { type: 'NUMBER', description: 'الإجمالي' },
-        paid_price: { type: 'NUMBER', description: 'المبلغ المدفوع' },
+        totalPrice: { type: 'NUMBER', description: 'الإجمالي' },
+        paidPrice: { type: 'NUMBER', description: 'المبلغ المدفوع' },
         status: { type: 'STRING', description: 'حالة الدفع: paid أو as_dept' },
         quantity: { type: 'NUMBER', description: 'الكمية' },
-        arrive_date: { type: 'STRING', description: 'تاريخ الوصول (YYYY-MM-DD)' },
-        payment_date: { type: 'STRING', description: 'تاريخ الاستحقاق (افتراضي بعد شهر)' },
-        supplier_id: { type: 'STRING', description: 'معرف المورد (UUID)' },
-        property_id: { type: 'STRING', description: 'معرف العقار (UUID)' },
+        arriveDate: { type: 'STRING', description: 'تاريخ الوصول (YYYY-MM-DD)' },
+        paymentDate: { type: 'STRING', description: 'تاريخ الاستحقاق (افتراضي بعد شهر)' },
+        supplierId: { type: 'STRING', description: 'معرف المورد (UUID)' },
+        propertyId: { type: 'STRING', description: 'معرف العقار (UUID)' },
       },
-      required: ['name', 'total_price', 'supplier_id', 'property_id'],
+      required: ['name', 'totalPrice', 'supplierId', 'propertyId'],
     },
   },
   {
@@ -325,12 +319,12 @@ export const agentTools = [
       properties: {
         id: { type: 'STRING', description: 'معرف المادة (UUID)' },
         name: { type: 'STRING', description: 'اسم المادة' },
-        total_price: { type: 'NUMBER', description: 'الإجمالي' },
-        paid_price: { type: 'NUMBER', description: 'المبلغ المدفوع' },
+        totalPrice: { type: 'NUMBER', description: 'الإجمالي' },
+        paidPrice: { type: 'NUMBER', description: 'المبلغ المدفوع' },
         status: { type: 'STRING', description: 'حالة الدفع: paid أو as_dept' },
         quantity: { type: 'NUMBER', description: 'الكمية' },
-        arrive_date: { type: 'STRING', description: 'تاريخ الوصول' },
-        payment_date: { type: 'STRING', description: 'تاريخ الاستحقاق' },
+        arriveDate: { type: 'STRING', description: 'تاريخ الوصول' },
+        paymentDate: { type: 'STRING', description: 'تاريخ الاستحقاق' },
       },
       required: ['id'],
     },
@@ -390,16 +384,16 @@ export const agentTools = [
       properties: {
         sender: { type: 'STRING', description: 'اسم القائم بالصرف / الراسل' },
         amount: { type: 'NUMBER', description: 'المبلغ المصروف' },
-        expense_categories_id: { type: 'STRING', description: 'معرف تصنيف المصروف (UUID)' },
-        expense_date: { type: 'STRING', description: 'تاريخ الصرف (YYYY-MM-DD)' },
-        paid_to: { type: 'STRING', description: 'الجهة أو الشخص المستلم' },
-        payment_method: { type: 'STRING', description: 'طريقة الدفع: CASH, credit_card, BANK_TRANSFER, CHECK, PETTY_CASH' },
-        receipt_number: { type: 'STRING', description: 'رقم الإيصال (إجباري فقط في حالة التحويل البنكي أو الـ credit_card)' },
-        receipt_image_url: { type: 'STRING', description: 'رابط صورة الإيصال' },
-        approved_by: { type: 'STRING', description: 'الشخص الذي وافق على الصرف' },
+        expenseCategoryId: { type: 'STRING', description: 'معرف تصنيف المصروف (UUID)' },
+        expenseDate: { type: 'STRING', description: 'تاريخ الصرف (YYYY-MM-DD)' },
+        paidTo: { type: 'STRING', description: 'الجهة أو الشخص المستلم' },
+        paymentMethod: { type: 'STRING', description: 'طريقة الدفع: CASH, credit_card, BANK_TRANSFER, CHECK, PETTY_CASH' },
+        receiptNumber: { type: 'STRING', description: 'رقم الإيصال (إجباري فقط في حالة التحويل البنكي أو الـ credit_card)' },
+        receiptImageUrl: { type: 'STRING', description: 'رابط صورة الإيصال' },
+        approvedBy: { type: 'STRING', description: 'الشخص الذي وافق على الصرف' },
         notes: { type: 'STRING', description: 'ملاحظات إضافية' },
       },
-      required: ['sender', 'amount'],
+      required: ['sender', 'amount', 'expenseCategoryId'],
     },
   },
   {
@@ -476,11 +470,11 @@ export const agentTools = [
     parameters: {
       type: 'OBJECT',
       properties: {
-        property_id: { type: 'STRING', description: 'معرف العقار التابعة له الشقة (UUID)' },
+        propertyId: { type: 'STRING', description: 'معرف العقار التابعة له الشقة (UUID)' },
         floor: { type: 'NUMBER', description: 'رقم الدور' },
-        number: { type: 'NUMBER', description: 'رقم الشقة' },
+        number: { type: 'STRING', description: 'رقم/كود الشقة (مثل: 3A, 4A)' },
       },
-      required: ['property_id', 'floor', 'number'],
+      required: ['propertyId', 'floor', 'number'],
     },
   },
   {
@@ -491,7 +485,7 @@ export const agentTools = [
       properties: {
         id: { type: 'STRING', description: 'معرف الشقة (UUID)' },
         floor: { type: 'NUMBER', description: 'رقم الدور' },
-        number: { type: 'NUMBER', description: 'رقم الشقة' },
+        number: { type: 'STRING', description: 'رقم/كود الشقة (مثل: 3A, 4A)' },
       },
       required: ['id'],
     },
