@@ -4,9 +4,27 @@ import { asyncHandler, byId, create, pagination, remove, update } from './crud.j
 export const listSuppliers = asyncHandler(async (req, res) => {
   const { page, limit, skip } = pagination(req.query);
   const search = req.query.search?.trim();
+  const hasDebtFilter = req.query.has_debt;
   const debtOnly = req.query.has_debt === 'true';
-  const where = { ...(search && { name: { contains: search, mode: 'insensitive' } }), ...(debtOnly && { materials: { some: { status: 'as_dept', remainingAmount: { gt: 0 } } } }) };
-  const [data, total] = await prisma.$transaction([prisma.supplier.findMany({ where, orderBy: { name: 'asc' }, skip, take: limit }), prisma.supplier.count({ where })]);
+  const where = {
+    ...(search && { name: { contains: search, mode: 'insensitive' } }),
+    ...(hasDebtFilter === 'true' && { 
+      materials: { some: { status: 'as_dept', remainingAmount: { gt: 0 } } } 
+    }),
+    ...(hasDebtFilter === 'false' && { 
+      materials: { none: { status: 'as_dept', remainingAmount: { gt: 0 } } } 
+    }),
+  };
+  const [data, total] = await prisma.$transaction([
+    prisma.supplier.findMany({ 
+      where, 
+      orderBy: { name: 'asc' }, 
+      skip, 
+      take: limit,
+      include: {materials: true,}
+    }),
+    prisma.supplier.count({ where })
+  ]);
   res.json({ data, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
 });
 export const getSupplier = byId(prisma.supplier, { materials: true });
@@ -24,7 +42,6 @@ export const totalDebt = asyncHandler(async (_req, res) => {
 });
 export const supplierDetails = asyncHandler(
   async (_req, res) =>{
-    console.log('Fetching supplier details'); 
     res.json({ data: await prisma.$queryRaw`SELECT * FROM v_supplier_materials ORDER BY supplier_name, material_name` })
   }
 );

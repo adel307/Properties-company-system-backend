@@ -78,11 +78,14 @@ model Material {
   arriveDate      DateTime       @map("arrive_date") @db.Date
   remainingAmount Decimal        @map("remaining_amount") @db.Decimal(14, 2)
   paymentDate     DateTime?      @map("payment_date") @db.Date
-  supplierId      String         @map("supplier_id") @db.Uuid
-  propertyId      String         @map("property_id") @db.Uuid
+  
+  supplierId      String?        @map("supplier_id") @db.Uuid
+  propertyId      String?        @map("property_id") @db.Uuid
+
   updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  property        Property       @relation(fields: [propertyId], references: [id])
-  supplier        Supplier       @relation(fields: [supplierId], references: [id])
+
+  property        Property?      @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  supplier        Supplier?      @relation(fields: [supplierId], references: [id], onDelete: SetNull)
 
   @@index([supplierId, status], map: "idx_materials_supplier_status")
   @@index([supplierId, status, remainingAmount], map: "idx_materials_supplier_status_covering")
@@ -98,32 +101,35 @@ model ExpenseCategory {
 }
 
 model DailyExpense {
-  id                String          @id @default(uuid()) @db.Uuid
+  id                String           @id @default(uuid()) @db.Uuid
   sender            String
-  amount            Decimal         @db.Decimal(14, 2)
-  expenseCategoryId String          @map("expense_category_id") @db.Uuid
-  expenseDate       DateTime        @map("expense_date") @db.Date
-  paidTo            String          @map("paid_to")
-  paymentMethod     PaymentMethod   @default(CASH) @map("payment_method")
-  receiptNumber     String?         @map("receipt_number")
-  receiptImageUrl   String?         @map("receipt_image_url")
-  approvedBy        String?         @map("approved_by")
+  amount            Decimal          @db.Decimal(14, 2)
+  
+  expenseCategoryId String?          @map("expense_category_id") @db.Uuid
+  
+  expenseDate       DateTime         @map("expense_date") @db.Date
+  paidTo            String           @map("paid_to")
+  paymentMethod     PaymentMethod    @default(CASH) @map("payment_method")
+  receiptNumber     String?          @map("receipt_number")
+  receiptImageUrl   String?          @map("receipt_image_url")
+  approvedBy        String?          @map("approved_by")
   notes             String?
-  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  category          ExpenseCategory @relation(fields: [expenseCategoryId], references: [id])
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  category          ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id], onDelete: SetNull)
 
   @@index([expenseDate])
   @@map("daily_expenses")
 }
 
 model AuditLog {
-  id         String      @id @default(uuid()) @db.Uuid
-  tableName  String      @map("table_name")
+  id        String      @id @default(uuid()) @db.Uuid
+  tableName String      @map("table_name")
   actionType AuditAction @map("action_type")
-  oldData    Json?       @map("old_data")
-  newData    Json?       @map("new_data")
-  recordId   String      @map("record_id") @db.Uuid
-  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  oldData   Json?       @map("old_data")
+  newData   Json?       @map("new_data")
+  recordId  String      @map("record_id") @db.Uuid
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([tableName, recordId])
   @@map("audit_logs")

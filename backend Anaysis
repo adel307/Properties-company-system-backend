@@ -1,11 +1,18 @@
+Updated implementation snapshot (2026-09-22)
+- Express/Prisma API runs from src/index.js on PORT or 6000, with /health public and /api protected by optional x-api-key authentication.
+- Current routes include the CRUD resources below plus /api/audit-logs, /api/speech, /api/voice-assistant/process, and /api/analyze-stored-audio.
+- Voice processing uploads audio with multer, transcribes Arabic through Groq Whisper, analyzes text through Gemini fallback models, and stores transcription/results JSON files.
+- The API uses generic pagination/CRUD helpers, UUID and body validation, Prisma transactions for property relation updates, and standard { data, pagination } responses.
+- Required DATABASE_URL; optional PORT, FRONTEND_URL, API_KEY, GROQ_API_KEY, and GEMINI_API_KEY.
+
 APIs : {
     get:/employees
-        query_params:{
-            page,
-            limit,
-            sort_by="name",
-            search,
-        }
+query_params:{
+    page,
+    limit,
+    sort_by="name",
+    search,
+}
     ,
     get:/employees/:id,
     post:/employees/,
@@ -13,21 +20,21 @@ APIs : {
     delete:/employees/:id,
     
     get:/suppliers
-        query_params:{
-            page,
-            limit,
-            sort_by=name,
-            search,
-            has_debt=true,
-        }
+query_params:{
+    page,
+    limit,
+    sort_by=name,
+    search,
+    has_debt=true,
+}
     ,
     get:/suppliers/total_debt,
-    get:/suppliers/details, ( suppliers_details )
+get:/suppliers/details, ( suppliers_details ) 
     get:/suppliers/:id,
     get:/suppliers/:id/total_debt,
     post:/suppliers/,
     put:/suppliers/:id,
-    delete:/suppliers/:id,
+delete:/suppliers/:id,
 
     get:/properties
         query_params:{
@@ -81,6 +88,11 @@ project structure:"
         schema.prisma
         seed.js
     src/
+        ai/
+            tools/
+                definitions.js
+                handlers.js
+            agentService.js
         controllers/
         middleware/
             authMiddleware.js
@@ -240,12 +252,8 @@ SELECT
 FROM supplier s
 LEFT JOIN materials m ON s.id = m.supplier_id;
 
-*/
-
 CREATE INDEX idx_materials_supplier_status 
 ON materials (supplier_ID, status);
 
 CREATE INDEX idx_materials_supplier_status_covering 
 ON materials (supplier_ID, status, remaining_amount);
-
-*/

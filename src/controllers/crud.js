@@ -68,7 +68,6 @@ export function byId(model, include) {
   });
 }
 
-// تم التحديث: دعم معالجة التواريخ وتخصيص البيانات الممررة
 export function create(model, transformData) {
   return asyncHandler(async (req, res) => {
     const payload = transformData ? transformData(req.body) : parseDates(req.body);

@@ -11,7 +11,10 @@ import materialRoutes from './routes/materialRoutes.js';
 import expenseRoutes from './routes/expenseRoutes.js';
 import expenseCategoryRoutes from './routes/expenseCategoryRoutes.js';
 import apartmentRoutes from './routes/apartmentRoutes.js';
-import { ShowAllTables } from './controllers/DBController.js';
+import auditLogsRoutes from './routes/auditLogsRoutes.js';
+import voiceAssistantRouter from './routes/voiceAssistantRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
+
 
 const app = express();
 const allowedOrigins = [
@@ -44,6 +47,9 @@ app.use('/api/materials', materialRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/expense_categories', expenseCategoryRoutes);
 app.use('/api/apartments', apartmentRoutes);
+app.use('/api/audit-logs', auditLogsRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/voice-assistant', voiceAssistantRouter);
 
 app.use((_req, res) => res.status(404).json({ error: 'Route not found' }));
 app.use((error, _req, res, _next) => {
