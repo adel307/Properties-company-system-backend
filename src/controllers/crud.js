@@ -3,7 +3,6 @@ import prisma from '../db.js';
 export const asyncHandler = (handler) => (req, res, next) =>
   Promise.resolve(handler(req, res, next)).catch(next);
 
-// دالة مساعدة لتحويل نصوص التواريخ إلى Date Objects تلقائيًا
 function parseDates(data) {
   if (!data || typeof data !== 'object') return data;
   const transformed = { ...data };
@@ -76,7 +75,6 @@ export function create(model, transformData) {
   });
 }
 
-// تم التحديث: دعم معالجة التواريخ وتخصيص البيانات الممررة
 export function update(model, transformData) {
   return asyncHandler(async (req, res) => {
     try {

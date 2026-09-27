@@ -1,15 +1,15 @@
 Backend analysis
 
-Current implementation snapshot (2026-09-22)
+Current implementation snapshot (2026-09-24)
 - The backend is an ES-module Express REST API using Prisma 6 and PostgreSQL. It listens on PORT or 6000 by default.
 - /health is public; all /api routes use the optional API_KEY / x-api-key middleware. CORS allows localhost:3000 and FRONTEND_URL, JSON is limited to 1 MB, and rate limiting is 300 requests per 15 minutes.
-- In addition to CRUD resources, app.js mounts /api/speech, /api/voice-assistant/process, and /api/analyze-stored-audio.
-- The voice assistant accepts multipart audio, transcribes Arabic with Groq Whisper, persists a transcription JSON file, then analyzes it with Gemini using model fallback and retries. Results are saved under uploads/ and results/.
-- The stored-audio endpoint accepts a multipart transcription JSON file and analyzes its text with Gemini.
+- In addition to CRUD resources, app.js mounts /api/ai and /api/voice-assistant alongside /api/audit-logs.
+- The AI agent uses Gemini model fallback, bounded history, a five-iteration tool loop, and application tools for data operations and UI navigation.
+- The voice assistant accepts multipart audio, transcribes Arabic with Groq Whisper, analyzes the text, and persists transcription/analysis JSON files under uploads/ and results/.
 - The backend now uses generic CRUD/pagination helpers, strict UUID/body validation, standard { data, pagination } responses, and centralized Prisma error mapping.
 - Property updates transactionally manage apartment IDs and employee assignments. Material normalization calculates remainingAmount and defaults paymentDate one month after arriveDate.
 - Supplier debt/details use database views v_suppliers_with_debt and v_supplier_materials; the seed workflow creates these views and material indexes.
-- Required runtime configuration is DATABASE_URL. Optional feature settings are PORT, FRONTEND_URL, API_KEY, GROQ_API_KEY, and GEMINI_API_KEY.
+- Required runtime configuration is DATABASE_URL and GEMINI_API_KEY because the AI service is initialized at startup. Optional feature settings are PORT, FRONTEND_URL, API_KEY, GROQ_API_KEY, and audio/AI provider settings.
 
 Project overview
 - This service is a Prisma + PostgreSQL REST API for a real-estate and construction management system.

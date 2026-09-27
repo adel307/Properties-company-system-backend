@@ -1,9 +1,10 @@
-Updated implementation snapshot (2026-09-22)
+Updated implementation snapshot (2026-09-24)
 - Express/Prisma API runs from src/index.js on PORT or 6000, with /health public and /api protected by optional x-api-key authentication.
-- Current routes include the CRUD resources below plus /api/audit-logs, /api/speech, /api/voice-assistant/process, and /api/analyze-stored-audio.
-- Voice processing uploads audio with multer, transcribes Arabic through Groq Whisper, analyzes text through Gemini fallback models, and stores transcription/results JSON files.
+- Current routes include the CRUD resources below plus /api/audit-logs, /api/ai, and /api/voice-assistant. The older standalone speech/analyze paths are no longer mounted by app.js.
+- The AI agent uses Gemini fallback models, bounded conversation history, a five-iteration tool loop, and tools for data operations and UI navigation.
+- Voice processing accepts multipart audio with multer, transcribes Arabic through Groq Whisper, analyzes text, and stores transcription/analysis JSON files under uploads/ and results/.
 - The API uses generic pagination/CRUD helpers, UUID and body validation, Prisma transactions for property relation updates, and standard { data, pagination } responses.
-- Required DATABASE_URL; optional PORT, FRONTEND_URL, API_KEY, GROQ_API_KEY, and GEMINI_API_KEY.
+- Required DATABASE_URL and GEMINI_API_KEY; optional PORT, FRONTEND_URL, API_KEY, GROQ_API_KEY, and other AI/audio settings.
 
 APIs : {
     get:/employees

@@ -2,11 +2,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🚀 Starting Seeding and View creation Process...');
-
-  // ==========================================
-  // 1. Create SQL Views & Indexes
-  // ==========================================
+  console.log('🚀 Starting Seeding, Views, and Triggers Process...');
 
   console.log('📊 Creating Database Views...');
 
@@ -80,12 +76,80 @@ async function main() {
     ON materials (supplier_id, status, remaining_amount);
   `);
 
+  console.log('🔔 Creating Audit Log Triggers...');
+
+  // 1.5 Create Generic Audit Trigger Function
+  await prisma.$executeRawUnsafe(`
+    CREATE OR REPLACE FUNCTION log_audit_action()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        v_old_data JSONB := NULL;
+        v_new_data JSONB := NULL;
+        v_record_id UUID;
+        v_action "AuditAction";
+    BEGIN
+        IF (TG_OP = 'INSERT') THEN
+            v_action := 'INSERT'::"AuditAction";
+            v_new_data := to_jsonb(NEW);
+            v_record_id := NEW.id;
+        ELSIF (TG_OP = 'UPDATE') THEN
+            v_action := 'UPDATE'::"AuditAction";
+            v_old_data := to_jsonb(OLD);
+            v_new_data := to_jsonb(NEW);
+            v_record_id := NEW.id;
+        ELSIF (TG_OP = 'DELETE') THEN
+            v_action := 'DELETE'::"AuditAction";
+            v_old_data := to_jsonb(OLD);
+            v_record_id := OLD.id;
+        END IF;
+
+        INSERT INTO audit_logs (id, table_name, action_type, old_data, new_data, record_id, created_at)
+        VALUES (
+            gen_random_uuid(),
+            TG_TABLE_NAME,
+            v_action,
+            v_old_data,
+            v_new_data,
+            v_record_id,
+            NOW()
+        );
+
+        RETURN NULL;
+    END;
+    $$ LANGUAGE plpgsql;
+  `);
+
+  // قائمة الجداول المراد تفعيل الـ Audit عليها
+  const targetTables = [
+    'employees',
+    'suppliers',
+    'properties',
+    'apartments',
+    'materials',
+    'expense_categories',
+    'daily_expenses'
+  ];
+
+  // ✅ التعديل هنا: الفصل بين DROP TRIGGER و CREATE TRIGGER في استعلامين منفصلين
+  for (const table of targetTables) {
+    await prisma.$executeRawUnsafe(`
+      DROP TRIGGER IF EXISTS trg_audit_${table} ON "${table}";
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      CREATE TRIGGER trg_audit_${table}
+      AFTER INSERT OR UPDATE OR DELETE ON "${table}"
+      FOR EACH ROW EXECUTE FUNCTION log_audit_action();
+    `);
+  }
+
   // ==========================================
   // 2. Seed Initial Dummy Data
   // ==========================================
 
   console.log('🌱 Seeding initial records...');
 
+  await prisma.auditLog.deleteMany();
   await prisma.material.deleteMany();
   await prisma.dailyExpense.deleteMany();
   await prisma.expenseCategory.deleteMany();
@@ -218,7 +282,7 @@ async function main() {
     }
   });
 
-  console.log('✅ Seeding & View setup completed successfully!');
+  console.log('✅ Seeding, Views, and Triggers setup completed successfully!');
 }
 
 main()

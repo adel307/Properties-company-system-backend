@@ -1,7 +1,9 @@
 import prisma from '../db.js';
 import { byId, create, paginated, remove, update } from './crud.js';
-export const listApartments = paginated(prisma.apartment, { include: { property: true }, orderBy: { floor: 'asc' } });
-export const getApartment = byId(prisma.apartment, { property: true });
-export const createApartment = create(prisma.apartment);
-export const updateApartment = update(prisma.apartment);
-export const deleteApartment = remove(prisma.apartment);
+export const listAuditLogs = paginated(prisma.AuditLog,{
+  orderBy: { createdAt: 'desc' },
+});
+export const getAuditLog = byId(prisma.AuditLog);
+export const createAuditLog = create(prisma.AuditLog);
+export const updateAuditLog = update(prisma.AuditLog);
+export const deleteAuditLog = remove(prisma.AuditLog);
