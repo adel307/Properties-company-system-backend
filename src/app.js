@@ -14,6 +14,7 @@ import apartmentRoutes from './routes/apartmentRoutes.js';
 import auditLogsRoutes from './routes/auditLogsRoutes.js';
 import voiceAssistantRouter from './routes/voiceAssistantRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import printRoutes from './routes/printRoutes.js';
 
 
 const app = express();
@@ -49,6 +50,7 @@ app.use('/api/expense_categories', expenseCategoryRoutes);
 app.use('/api/apartments', apartmentRoutes);
 app.use('/api/audit-logs', auditLogsRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/print', printRoutes);
 app.use('/api/voice-assistant', voiceAssistantRouter);
 
 app.use((_req, res) => res.status(404).json({ error: 'Route not found' }));
