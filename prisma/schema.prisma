@@ -58,11 +58,14 @@ model PropertyEmployee {
 }
 
 model Apartment {
-  id         String   @id @default(uuid()) @db.Uuid
-  propertyId String   @map("property_id") @db.Uuid
+  id         String          @id @default(uuid()) @db.Uuid
+  propertyId String          @map("property_id") @db.Uuid
+  status     ApartmentStatus @default(Available)
   floor      Int
   number     String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property   Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  leases Lease[]
 
   @@unique([propertyId, floor, number])
   @@map("apartments")
@@ -122,6 +125,83 @@ model DailyExpense {
   @@map("daily_expenses")
 }
 
+model Tenant {
+  id         String   @id @default(uuid()) @db.Uuid
+  name       String
+  nationalId String?  @unique @map("national_id")
+  phone      String
+  email      String?
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  leases Lease[]
+
+  @@map("tenants")
+}
+
+model Lease {
+  id          String         @id @default(uuid()) @db.Uuid
+  apartmentId String         @map("apartment_id") @db.Uuid
+  tenantId    String         @map("tenant_id") @db.Uuid
+  startDate   DateTime       @map("start_date") @db.Date
+  endDate     DateTime?      @map("end_date") @db.Date
+  rentAmount  Decimal        @map("rent_amount") @db.Decimal(12, 2)
+  deposit     Decimal?       @db.Decimal(12, 2)
+  status      LeaseStatus    @default(ACTIVE)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  apartment Apartment      @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payments  LeasePayment[]
+
+  @@index([tenantId])
+  @@index([apartmentId, status])
+  @@map("leases")
+}
+
+model LeasePayment {
+  id              String               @id @default(uuid()) @db.Uuid
+  leaseId         String               @map("lease_id") @db.Uuid
+  dueDate         DateTime             @map("due_date") @db.Date
+  
+  totalAmount     Decimal              @map("total_amount") @db.Decimal(14, 2)
+  paidAmount      Decimal              @default(0) @map("paid_amount") @db.Decimal(14, 2)
+  remainingAmount Decimal              @map("remaining_amount") @db.Decimal(14, 2)
+  
+  status          PaymentStatus        @default(PENDING)
+  notes           String?
+  
+  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  lease        Lease                @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  transactions PaymentTransaction[]
+
+  @@index([leaseId, status])
+  @@index([dueDate])
+  @@map("lease_payments")
+}
+
+model PaymentTransaction {
+  id              String        @id @default(uuid()) @db.Uuid
+  leasePaymentId  String        @map("lease_payment_id") @db.Uuid
+  amountPaid      Decimal       @map("amount_paid") @db.Decimal(14, 2)
+  paymentDate     DateTime      @default(now()) @map("payment_date") @db.Timestamptz(6)
+  paymentMethod   PaymentMethod @default(CASH) @map("payment_method")
+  receiptNumber   String?       @map("receipt_number")
+  receiptImageUrl String?       @map("receipt_image_url")
+  receivedBy      String?       @map("received_by")
+  notes           String?
+
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  leasePayment LeasePayment @relation(fields: [leasePaymentId], references: [id], onDelete: Cascade)
+
+  @@index([leasePaymentId])
+  @@map("payment_transactions")
+}
+
 model AuditLog {
   id        String      @id @default(uuid()) @db.Uuid
   tableName String      @map("table_name")
@@ -158,3 +238,23 @@ enum AuditAction {
   UPDATE
   DELETE
 }
+
+enum LeaseStatus {
+  ACTIVE
+  EXPIRED
+  TERMINATED
+  PENDING
+}
+
+enum PaymentStatus {
+  PENDING   // قيد الانتظار لم يتم دفع أي مبلغ بعد
+  PARTIAL   // تم سداد جزء من القسط ويتبقى جزء آخر
+  PAID      // تم سداد القسط بالكامل
+  OVERDUE   // متأخر عن تاريخ الاستحقاق ولم يُكتمل
+}
+
+enum ApartmentStatus {
+  Available 
+  leased
+}
+

@@ -23,5 +23,3 @@ export const getEmployee = byId(prisma.employee, { properties: { include: { prop
 export const createEmployee = create(prisma.employee);
 export const updateEmployee = update(prisma.employee);
 export const deleteEmployee = remove(prisma.employee);
-
-// KEEP

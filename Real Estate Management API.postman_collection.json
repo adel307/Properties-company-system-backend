@@ -1108,6 +1108,814 @@
       ]
     },
     {
+      "name": "7. Tenants",
+      "item": [
+        {
+          "name": "List tenants",
+          "description": "Get all tenants with optional search and pagination.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tenants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "name",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "ahmed",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/tenants",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "tenants"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"{{tenantId}}\",\n      \"name\": \"Ahmed Ali\",\n      \"nationalId\": \"12345678901234\",\n      \"phone\": \"+966500000000\",\n      \"email\": \"ahmed.ali@example.com\"\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 20,\n    \"total\": 1,\n    \"pages\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get tenant",
+          "description": "Fetch a single tenant by ID.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/{{tenantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "{{tenantId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{tenantId}}\",\n    \"name\": \"Ahmed Ali\",\n    \"nationalId\": \"12345678901234\",\n    \"phone\": \"+966500000000\",\n    \"email\": \"ahmed.ali@example.com\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create tenant",
+          "description": "Create a new tenant record.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('tenantId', data.id || data.data?.id); }",
+                  "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmed Ali\",\n  \"nationalId\": \"12345678901234\",\n  \"phone\": \"+966500000000\",\n  \"email\": \"ahmed.ali@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tenants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{tenantId}}\",\n    \"name\": \"Ahmed Ali\",\n    \"nationalId\": \"12345678901234\",\n    \"phone\": \"+966500000000\",\n    \"email\": \"ahmed.ali@example.com\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update tenant",
+          "description": "Update tenant details.",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmed Ali Updated\",\n  \"nationalId\": \"12345678901234\",\n  \"phone\": \"+966500000001\",\n  \"email\": \"ahmed.updated@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tenants/{{tenantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "{{tenantId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{tenantId}}\",\n    \"name\": \"Ahmed Ali Updated\",\n    \"phone\": \"+966500000001\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete tenant",
+          "description": "Delete a tenant record by ID.",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/{{tenantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "{{tenantId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "8. Leases",
+      "item": [
+        {
+          "name": "List leases",
+          "description": "Get all leases with filters by status, apartment, tenant, and search.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "disabled": true
+                },
+                {
+                  "key": "tenant_id",
+                  "value": "{{tenantId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "apartment_id",
+                  "value": "{{apartmentId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "cairo",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "startDate",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"{{leaseId}}\",\n      \"apartmentId\": \"{{apartmentId}}\",\n      \"tenantId\": \"{{tenantId}}\",\n      \"startDate\": \"2026-01-01\",\n      \"endDate\": \"2027-01-01\",\n      \"rentAmount\": \"6000.00\",\n      \"deposit\": \"12000.00\",\n      \"status\": \"ACTIVE\"\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 20,\n    \"total\": 1,\n    \"pages\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get lease",
+          "description": "Fetch a single lease with tenant and apartment details.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leases/{{leaseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases",
+                "{{leaseId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{leaseId}}\",\n    \"apartmentId\": \"{{apartmentId}}\",\n    \"tenantId\": \"{{tenantId}}\",\n    \"startDate\": \"2026-01-01\",\n    \"endDate\": \"2027-01-01\",\n    \"rentAmount\": \"6000.00\",\n    \"deposit\": \"12000.00\",\n    \"status\": \"ACTIVE\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create lease",
+          "description": "Create a new lease agreement.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('leaseId', data.id || data.data?.id); }",
+                  "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"apartmentId\": \"{{apartmentId}}\",\n  \"tenantId\": \"{{tenantId}}\",\n  \"startDate\": \"2026-01-01\",\n  \"endDate\": \"2027-01-01\",\n  \"rentAmount\": 6000,\n  \"deposit\": 12000,\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{leaseId}}\",\n    \"apartmentId\": \"{{apartmentId}}\",\n    \"tenantId\": \"{{tenantId}}\",\n    \"startDate\": \"2026-01-01\",\n    \"endDate\": \"2027-01-01\",\n    \"rentAmount\": \"6000.00\",\n    \"deposit\": \"12000.00\",\n    \"status\": \"ACTIVE\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update lease",
+          "description": "Update lease information such as rent amount, dates, or status.",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"apartmentId\": \"{{apartmentId}}\",\n  \"tenantId\": \"{{tenantId}}\",\n  \"startDate\": \"2026-01-01\",\n  \"endDate\": \"2027-02-01\",\n  \"rentAmount\": 6500,\n  \"deposit\": 13000,\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leases/{{leaseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases",
+                "{{leaseId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{leaseId}}\",\n    \"rentAmount\": \"6500.00\",\n    \"endDate\": \"2027-02-01\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete lease",
+          "description": "Delete a lease by ID.",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leases/{{leaseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases",
+                "{{leaseId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "9. Lease Payments",
+      "item": [
+        {
+          "name": "List lease payments",
+          "description": "List all monthly payment records for lease installments.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lease-payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lease-payments"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING",
+                  "disabled": true
+                },
+                {
+                  "key": "lease_id",
+                  "value": "{{leaseId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "dueDate",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"{{leasePaymentId}}\",\n      \"leaseId\": \"{{leaseId}}\",\n      \"dueDate\": \"2026-02-01\",\n      \"totalAmount\": \"6000.00\",\n      \"paidAmount\": \"0.00\",\n      \"remainingAmount\": \"6000.00\",\n      \"status\": \"PENDING\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get lease payment",
+          "description": "Fetch one lease-payment record and its linked lease/tenant data.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lease-payments/{{leasePaymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lease-payments",
+                "{{leasePaymentId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{leasePaymentId}}\",\n    \"leaseId\": \"{{leaseId}}\",\n    \"dueDate\": \"2026-02-01\",\n    \"totalAmount\": \"6000.00\",\n    \"paidAmount\": \"0.00\",\n    \"remainingAmount\": \"6000.00\",\n    \"status\": \"PENDING\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create lease payment",
+          "description": "Create a due payment record for a lease.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('leasePaymentId', data.id || data.data?.id); }",
+                  "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leaseId\": \"{{leaseId}}\",\n  \"dueDate\": \"2026-02-01\",\n  \"totalAmount\": 6000,\n  \"paidAmount\": 0,\n  \"remainingAmount\": 6000,\n  \"status\": \"PENDING\",\n  \"notes\": \"Monthly rent due\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lease-payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lease-payments"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{leasePaymentId}}\",\n    \"leaseId\": \"{{leaseId}}\",\n    \"dueDate\": \"2026-02-01\",\n    \"totalAmount\": \"6000.00\",\n    \"paidAmount\": \"0.00\",\n    \"remainingAmount\": \"6000.00\",\n    \"status\": \"PENDING\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update lease payment",
+          "description": "Update a lease payment record and its balances.",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leaseId\": \"{{leaseId}}\",\n  \"dueDate\": \"2026-02-01\",\n  \"totalAmount\": 6000,\n  \"paidAmount\": 2000,\n  \"remainingAmount\": 4000,\n  \"status\": \"PARTIAL\",\n  \"notes\": \"Partial payment received\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lease-payments/{{leasePaymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lease-payments",
+                "{{leasePaymentId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{leasePaymentId}}\",\n    \"paidAmount\": \"2000.00\",\n    \"remainingAmount\": \"4000.00\",\n    \"status\": \"PARTIAL\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete lease payment",
+          "description": "Delete a specific lease payment record.",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lease-payments/{{leasePaymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lease-payments",
+                "{{leasePaymentId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "10. Payment Transactions",
+      "item": [
+        {
+          "name": "List payment transactions",
+          "description": "List all payment transaction entries for lease installments.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payment-transactions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment-transactions"
+              ],
+              "query": [
+                {
+                  "key": "payment_method",
+                  "value": "CASH",
+                  "disabled": true
+                },
+                {
+                  "key": "lease_payment_id",
+                  "value": "{{leasePaymentId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "paymentDate",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"{{paymentTransactionId}}\",\n      \"leasePaymentId\": \"{{leasePaymentId}}\",\n      \"amountPaid\": \"2000.00\",\n      \"paymentDate\": \"2026-02-01T00:00:00.000Z\",\n      \"paymentMethod\": \"CASH\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get payment transaction",
+          "description": "Fetch a specific payment transaction by ID.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payment-transactions/{{paymentTransactionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment-transactions",
+                "{{paymentTransactionId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{paymentTransactionId}}\",\n    \"leasePaymentId\": \"{{leasePaymentId}}\",\n    \"amountPaid\": \"2000.00\",\n    \"paymentDate\": \"2026-02-01T00:00:00.000Z\",\n    \"paymentMethod\": \"CASH\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create payment transaction",
+          "description": "Record a new payment transaction against a lease payment.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) { const data = pm.response.json(); pm.collectionVariables.set('paymentTransactionId', data.id || data.data?.id); }",
+                  "pm.test('Status code is 200/201', () => pm.expect([200, 201]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leasePaymentId\": \"{{leasePaymentId}}\",\n  \"amountPaid\": 2000,\n  \"paymentDate\": \"2026-02-01T00:00:00.000Z\",\n  \"paymentMethod\": \"CASH\",\n  \"receiptNumber\": \"RCPT-2026-002\",\n  \"receiptImageUrl\": \"https://example.com/receipts/RCPT-2026-002.jpg\",\n  \"receivedBy\": \"Finance Officer\",\n  \"notes\": \"Cash payment received\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payment-transactions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment-transactions"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{paymentTransactionId}}\",\n    \"leasePaymentId\": \"{{leasePaymentId}}\",\n    \"amountPaid\": \"2000.00\",\n    \"paymentDate\": \"2026-02-01T00:00:00.000Z\",\n    \"paymentMethod\": \"CASH\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update payment transaction",
+          "description": "Update a payment transaction record.",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leasePaymentId\": \"{{leasePaymentId}}\",\n  \"amountPaid\": 2500,\n  \"paymentDate\": \"2026-02-01T00:00:00.000Z\",\n  \"paymentMethod\": \"BANK_TRANSFER\",\n  \"receiptNumber\": \"BT-2026-002\",\n  \"receivedBy\": \"Finance Manager\",\n  \"notes\": \"Updated bank transfer payment\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payment-transactions/{{paymentTransactionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment-transactions",
+                "{{paymentTransactionId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"{{paymentTransactionId}}\",\n    \"amountPaid\": \"2500.00\",\n    \"paymentMethod\": \"BANK_TRANSFER\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete payment transaction",
+          "description": "Delete a payment transaction by ID.",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payment-transactions/{{paymentTransactionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment-transactions",
+                "{{paymentTransactionId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "voice-assistant",
       "request": {
         "method": "POST",
@@ -1233,6 +2041,22 @@
     {
       "key": "apartmentId",
       "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e007"
+    },
+    {
+      "key": "tenantId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e008"
+    },
+    {
+      "key": "leaseId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e009"
+    },
+    {
+      "key": "leasePaymentId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e010"
+    },
+    {
+      "key": "paymentTransactionId",
+      "value": "018f8c41-7d67-7a6f-8dc3-0bd23ed1e011"
     }
   ]
 }

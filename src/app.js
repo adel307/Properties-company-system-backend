@@ -12,10 +12,12 @@ import expenseRoutes from './routes/expenseRoutes.js';
 import expenseCategoryRoutes from './routes/expenseCategoryRoutes.js';
 import apartmentRoutes from './routes/apartmentRoutes.js';
 import auditLogsRoutes from './routes/auditLogsRoutes.js';
+import TenantRoutes from './routes/TenantRoutes.js';
+import LeaseRoutes from './routes/LeaseRoutes.js';
+import LeasePaymentRoutes from './routes/LeasePaymentRoutes.js';
+import PaymentTransactionRoutes from './routes/PaymentTransactionRoutes.js';
 import voiceAssistantRouter from './routes/voiceAssistantRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
-import printRoutes from './routes/printRoutes.js';
-
 
 const app = express();
 const allowedOrigins = [
@@ -49,8 +51,11 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/expense_categories', expenseCategoryRoutes);
 app.use('/api/apartments', apartmentRoutes);
 app.use('/api/audit-logs', auditLogsRoutes);
+app.use('/api/tenants', TenantRoutes);
+app.use('/api/leases', LeaseRoutes);
+app.use('/api/lease-payments', LeasePaymentRoutes);
+app.use('/api/payment-transactions', PaymentTransactionRoutes);
 app.use('/api/ai', aiRoutes);
-app.use('/api/print', printRoutes);
 app.use('/api/voice-assistant', voiceAssistantRouter);
 
 app.use((_req, res) => res.status(404).json({ error: 'Route not found' }));
